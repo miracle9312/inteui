@@ -158,3 +158,34 @@ var configs = {
         date: inteui.date
     },
 }
+
+/*删除dist目录下的css文件*/
+gulp.task('clean-css',function (cb) {
+    return del(paths.dist.css+'**/*',cb)
+});
+
+// 删除 dist 目录下的 JavaScript 文件
+gulp.task('clean-js', function (cb) {
+    return del([paths.dist.js + '**/*'], cb);
+});
+
+//构建css文件
+gulp.task('test',['clean-css'],function (cb) {
+     gulp.src("src/inteui.less")
+         .pipe(less())
+         .pipe(autoprefixer(configs.autoprefixer))
+         .pipe(csscomb())
+         .pipe(csslint())
+         .pipe(csslint.formatter())
+         .pipe(gulp.dest("dist/css/grid"))
+         .on('end',function(){
+             cb()
+         })
+})
+
+/*
+gulp.watch("./src/app/less/appbar.less",function(event){
+    console.log(event.path,event)
+})
+*/
+

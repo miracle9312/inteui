@@ -32,6 +32,7 @@ $RECYCLE.BIN/
 #==========================
 # 忽略node_modules等
 node_modules
+less.js
 npm-debug.log
 .idea/*
 

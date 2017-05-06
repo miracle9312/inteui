@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="./mdui-v0.2.0/css/mdui.min.css">
+    <script type="application/javascript" src="./mdui-v0.2.0/js/mdui.min.js"></script>
+    <style>
+        .test-col{
+            background-color: yellow;
+        }
+        .test-float{
+            width:50px;
+            height: 50px;
+            background-color: #e1bee7;
+            border:solid 1px #efefef;
+        }
+        .float-middle:after{
+            content: "";
+            display: table;
+            clear: both;
+        }
+        [class*='mdui-col']{
+            border:solid 1px #000;
+        }
+    </style>
+</head>
+<body>
+<div class="mdui-container-fluid">
+    <div class="mdui-row mdui-row-gapless">
+        <div class="mdui-col-xs-2 test-col">test</div>
+        <div class="mdui-col-xs-2 test-col">test</div>
+        <div class="mdui-col-xs-2 test-col">test</div>
+        <div class="mdui-col-xs-2 test-col">teset</div>
+        <div class="mdui-col-xs-2 test-col">test</div>
+        <div class="mdui-col-xs-2 test-col">test</div>
+        <div class="mdui-col-xs-2 test-col">test</div>
+    </div>
+    <div>
+        <div class="test-float">1</div>
+        <div class="test-float float-middle">2</div>
+        <div class="test-float">3</div>
+    </div>
+</div>
+</body>
+</html>
