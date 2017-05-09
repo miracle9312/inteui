@@ -39,6 +39,8 @@
 .inteui-container,
 .inteui-container-fluid{
   box-sizing: border-box;
+  padding-left: @grid-gap-16/2;
+  padding-right: @grid-gap-16/2;
   margin:0 auto;/*水平居中*/
   &:after {/*清除浮动*/
     content: '';
@@ -61,8 +63,8 @@
 
 .inteui-row,
 [class*='inteui-row-']{
-  padding-left:@grid-gap-16;
-  padding-right: @grid-gap-16;
+  margin-left: -@grid-gap-16/2;
+  margin-right: -@grid-gap-16/2;
   &:after{
     content: '';
     display: table;
@@ -74,8 +76,8 @@
   box-sizing: border-box;
   position: relative;
   min-height: 1px;
-  padding-left: @grid-gap-16;
-  padding-right: @grid-gap-16;
+  padding-left: @grid-gap-16/2;
+  padding-right: @grid-gap-16/2;
 }
 
 .inteui-row-gapless [class*="inteui-col"]{
@@ -87,7 +89,7 @@
   ._grid_col_loop((@cols - 1), @screen);
 
   @widthName: '_screen-col-@{cols}';
-  @averageName: '_screen-col-@{cols}';
+  @averageName: '_screen-average-@{cols}';
 
   //列宽
   .inteui-col-@{screen}-@{cols}{
@@ -101,7 +103,7 @@
   }
 
   //等分列
-  .inteui-row-@{screen}-@{cols} .mdui-col{
+  .inteui-row-@{screen}-@{cols} .inteui-col{
     float:left;
     width: @@averageName;
   }
