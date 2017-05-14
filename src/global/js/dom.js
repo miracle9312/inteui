@@ -388,8 +388,184 @@ $={};
     }
 
     /**
-     * 设置 transition 动画时间
+     * 事件绑定
      * @param dom
-     * @param duration
+     * @param eventName 多个事件用空格分割
+     * @param targetSelector
+     * @param listener
+     * @param capture
      */
+    $.on = function(dom, eventName, targetSelector, listener, capture){
+        //处理委托事件
+        function handleLiveEvent(e){
+            var target = e.target;
+            if($.is(target, targetSelector)){
+                listener.call(target, e);
+            }else {
+                var parents = $.parents(target);
+                for(var i = 0; i<parents.length; i++){
+                    if($.is(parents[i], targetSelector)){
+                        listener.call(parents[i], e);
+                    }
+                }
+            }
+        }
+
+        events = eventName.split(' ');
+        var i ;
+        if(typeof targetSelector === 'function' || targetSelector === false){
+            if(typeof targetSelector === 'function'){
+                listener = arguments[2];
+                capture = arguments[3] || false;
+            }
+
+            capture = capture || false;
+            for (i = 0; i < events.length; i++){
+                dom.addEventListener(events[i], listener, capture);
+            }
+        }else{
+            //避免重复添加事件？？？
+            if(!dom.domLiveListener){
+                dom.domLiveListener = [];
+            }
+            dom.domLiveListener.push({listener:listener, LiveListener: handleLiveEvent});
+            for(i = 0; i<events.length; i++){
+                dom.addEventListener(events[i], handleLiveEvent, capture);
+            }
+
+        }
+    }
+
+    /**
+     * 解除事件绑定
+     * @param dom
+     * @param eventName
+     * @param targetSelector
+     * @param listener
+     * @param capture
+     */
+    $.off = function(dom, eventName, targetSelector, listener, capture){
+        var events = eventName.split(' ');
+        for(var i=0; i<events.length; i++){
+            if(typeof targetSelector === 'function'){
+                listener = arguments[2];
+                capture = arguments[3] || false;
+                dom.removeEventListener(events[i], listener, capture);
+            }else{
+                if(dom.domLiveListener){
+                    for(var j=0; j<dom.domLiveListener.length; j++){
+                        if(dom.domLiveListener[j].listener === listener){
+                            dom.removeEventListener(events[i], dom.domLiveListener[j].handleLiveEvent, capture);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 事件绑定，只触发一次
+     * @param dom
+     * @param eventName
+     * @param targetSelector
+     * @param listener
+     * @param capture
+     * @returns {*}
+     */
+    $.one = function(dom, eventName, targetSelector, listener, capture){
+        if(typeof targetSelector === 'function'){
+            listener = arguments[2];
+            capture = arguments[3];
+            targetSelector = false;
+        }
+
+        function proxy (e){
+            listener.call(e.target, e);
+            $.off(dom, eventName, targetSelector, proxy, capture);
+        }
+
+        $.on(dom, eventName, targetSelector, proxy,capture);
+    }
+
+    /**
+     * 触发事件
+     * @param dom
+     * @param eventName
+     * @param eventData
+     */
+    $.trigger = function(dom, eventName, eventData){
+        var events = eventName.split(' ');
+        for(var i = 0; i<events.length; i++){
+            var evt;
+            try{
+                evt = new CustomEvent(events[i],{detail: eventData, bubbles: true, cancelable: true});
+            }catch (e) {
+                evt = document.createEvent('Event');
+                evt.initEvent(event[i], true, true);
+                evt.detail = eventData;
+            }
+        }
+
+        dom.dispatchEvent(evt);
+
+    }
+
+    /**
+     * transition 动画结束回调
+     * @param dom
+     * @param callback
+     */
+    $.transitionEnd = function (dom, callback){
+        var events = [
+            'webkitTransitionEnd',
+            'transitionEnd'
+        ];
+
+        function fireCallback () {
+            callback.call(dom, e);
+            for(var i = 0; i < events.length; i++){
+                $.off(dom, events[i],fireCallback);
+            }
+        }
+
+        if(callback){
+            for(var i = 0; i < events.length; i++){
+                $.on(dom, events[i], fireCallback())
+            }
+        }
+    }
+
+    /**
+     * 重绘
+     * @param dom
+     * @returns {number}
+     */
+    $.relayout = function (dom) {
+        return dom.clientLeft
+    }
+
+    //页面重绘前调用回调函数
+    $.requestAnimationFrame = function (callback) {
+        var raf = window.requestAnimationFrame ||
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame;
+        if(raf){
+            return raf (callback);
+        }else{
+            return window.setTimeout(callback, 1000/60);
+        }
+    }
+
+    $.cancelAnimationFrame = function (id) {
+        var caf = window.cancelAnimationFrame ||
+                window.webkitCancelAnimationFrame ||
+                window.mozCancelAnimationFrame;
+        if(caf){
+            return caf(id);
+        }else{
+            return window.clearTimeout(id);
+        }
+    }
+
+
 })()
