@@ -29,7 +29,7 @@ $={};
         try{
             Array.prototype.slice(nodeList);
         }catch(e){
-            array = new Array();
+            array = [];
             for(var i=0;i<nodeList.length;i++){
                 array.push(nodeList[i]);
             }
@@ -120,7 +120,7 @@ $={};
             if(typeof params[key] === 'undefined'){
                 params[key] = value;
             }
-        })
+        });
 
         return params;
     };
@@ -215,7 +215,7 @@ $={};
     $.transform = function(dom, transform){
         dom.style.webkitTransform =
             dom.style.transform = transform;
-    }
+    };
 
     /**
      * 设置 transform-origin 属性
@@ -235,10 +235,11 @@ $={};
     $.transition = function (dom, duration) {
         if(typeof duration !== 'string'){
             duration = duration + 'ms'
-        };
+        }
+
         dom.style.webkitTransitionDuration =
             dom.style.transitionDuration = duration;
-    }
+    };
 
     /**
      * 执行 document.querySelectorAll，并把结果转换为数组
@@ -322,7 +323,7 @@ $={};
         }
 
         return false;
-    }
+    };
 
     /**
      * 查找含有指定 css 选择器的父节点
@@ -367,7 +368,7 @@ $={};
         }
 
         return $.unique(parents);
-    }
+    };
 
     /**
      * dom 元素是否包含在 parent 元素内
@@ -385,7 +386,7 @@ $={};
         }
 
         return false;
-    }
+    };
 
     /**
      * 事件绑定
@@ -434,7 +435,7 @@ $={};
             }
 
         }
-    }
+    };
 
     /**
      * 解除事件绑定
@@ -461,7 +462,7 @@ $={};
                 }
             }
         }
-    }
+    };
 
     /**
      * 事件绑定，只触发一次
@@ -485,7 +486,7 @@ $={};
         }
 
         $.on(dom, eventName, targetSelector, proxy,capture);
-    }
+    };
 
     /**
      * 触发事件
@@ -508,7 +509,7 @@ $={};
 
         dom.dispatchEvent(evt);
 
-    }
+    };
 
     /**
      * transition 动画结束回调
@@ -533,7 +534,7 @@ $={};
                 $.on(dom, events[i], fireCallback())
             }
         }
-    }
+    };
 
     /**
      * 重绘
@@ -542,7 +543,7 @@ $={};
      */
     $.relayout = function (dom) {
         return dom.clientLeft
-    }
+    };
 
     //页面重绘前调用回调函数
     $.requestAnimationFrame = function (callback) {
@@ -554,7 +555,7 @@ $={};
         }else{
             return window.setTimeout(callback, 1000/60);
         }
-    }
+    };
 
     $.cancelAnimationFrame = function (id) {
         var caf = window.cancelAnimationFrame ||
@@ -565,7 +566,219 @@ $={};
         }else{
             return window.clearTimeout(id);
         }
+    };
+
+    /**
+     * 创建 Node 数组
+     * @param selector 选择器或 html 字符串
+     * @returns {Array}
+     */
+    $.dom = function (selector){
+        var tempParent;
+
+        if(!selector){
+            return [];
+        }
+
+        //String
+        if(typeof selector === 'string'){
+            selector.trim();
+            if(selector.indexOf('<') >= 0 && selector.indexOf('>') >= selector.length){
+                var toCreate;
+                toCreate = 'div';
+
+                if(selector.indexOf('<li') === 0){
+                    toCreate = 'ul';
+                }
+
+                if(selector.indexOf('<td') === 0){
+                    toCreate = 'tr';
+                }
+
+                if(selector.indexOf('<tr') === 0){
+                    toCreate = 'tbody';
+                }
+
+                if(selector.indexOf('tbody') === 0){
+                    toCreate = 'table';
+                }
+
+                if(selector.indexOf('<option') === 0){
+                    toCreate = 'select';
+                }
+
+                tempParent = document.createElement(toCreate);
+                //html模板转为dom对象
+                tempParent.innerHTML = selector;
+                return $.toArray(tempParent.childNodes);
+            }else{
+                if(selector[0] === '#' &&  !selector.match(/[ .<>:~]/)){
+                    return [$.queryId(selector.split('#')[1])];
+                }else {
+                    // 其他选择器
+                    return $.queryAll(selector);
+                }
+            }
+
+        }
+
+        //node
+        else if(selector.nodeType || selector === window || selector === document){
+            return [selector];
+        }
+
+        //nodeList
+        else if(selector.length >0 && selector[0].nodeType){
+            return $.toArray(selector);
+        }
+
+        return [];
+    };
+
+    /**
+     * 获取含指定 css 的直接子元素数组
+     * @param dom
+     * @param selector
+     * @returns {Array}
+     */
+    $.children = function (dom, selector){
+        var childrens = [];
+        var childNodes = dom.childNodes;
+
+        if(!selector){
+            return $.toArray(childNodes);
+        }
+
+        for(var i = 0; i < childNodes.length; i++){
+            if(childNodes[i].nodeType === 1 && $.is(childNodes,selector)){
+                childrens.push(childNodes[i]);
+            }
+        }
+
+        return childrens.length ? childrens : null;
+    };
+
+    /**
+     * 获取含指定 css 的第一个直接子元素
+     * @param dom
+     * @param selector
+     * @returns {*}
+     */
+    $.child = function(dom, selector){
+        var children = dom.childNodes;
+
+        if(!selector){
+            return children[0];
+        }
+
+        for(var i = 0; i < children.length; i++){
+            if(children[i].nodeType === 1 && $.is(children[i], selector)){
+                return children[i];
+            }
+        }
+         return null;
+    };
+
+    /**
+     * 移除 dom 元素
+     * @param dom
+     */
+    $.remove = function (dom) {
+        if(dom && dom.parentNode){
+            dom.parentNode.removeChild(dom);
+        }
+    };
+
+    /**
+     * 移除 dom 元素中所有的子元素
+     * @param dom
+     */
+    $.empty = function(dom){
+        if(!dom || dom.nodeType !== 1){
+            return;
+        }
+
+        var children = dom.childNodes;
+        for(var i = 0; i < children.length; i++){
+            $.remove(children[i])
+        }
+
+        dom.textContent = '';
+    };
+
+    /**
+     * 把 newChild 添加到 dom 元素内的最前面
+     * @param dom
+     * @param newChild
+     */
+    $.prepend = function (dom, newChild) {
+        dom.insertBefore(newChild, dom.childNodes[0]);
+    };
+
+    /**
+     * Dom 加载完毕后
+     * @param fn
+     */
+    $.ready = function (fn) {
+        document.addEventListener('DOMContentLoaded',function(){
+            fn();
+        })
+    };
+
+    /**
+     * ???
+     * 解析 DATA API 参数
+     * @param str
+     * @returns {{}}
+     */
+    $.parseOption = function (str) {
+        var options = {};
+        if(str === null || !str){
+            return options
+        }
+
+        if(typeof str === 'object'){
+            return str;
+        }
+
+        /* jshint ignore:start */
+        var start = str.indexOf('{');
+        try{
+            options = (new Function('',
+                'var json = ' + str.substr(start) +
+                ';return JSON.parse(JSON.stringify(json));'))();
+        }catch(e){
+
+        }
+        /* jshint ignore:end */
+
+        return options;
+    };
+
+    /**
+     * 触发插件的事件
+     * @param eventName 事件名
+     * @param pluginName 插件名
+     * @param inst 插件实例
+     * @param trigger 在该元素上触发
+     * @param obj 事件参数
+     */
+    $.pluginEvent = function (eventName, pluginName, inst, trigger, obj){
+        if (typeof obj === 'undefined'){
+            obj = {};
+        }
+
+        obj.inst = inst;
+
+        var fullEventName = eventName + '.inteui.' + pliginName;
+
+        // jQuery 事件
+        if (typeof jQuery !== 'undefined') {
+            jQuery(trigger).trigger(fullEventName, obj);
+        }
+
+        //原生js事件
+        $.trigger(trigger, fullEventName, obj);
     }
 
-
-})()
+})();
