@@ -1,10 +1,19 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "sourceMap": true
+  "core_intro": {
+    "js": [
+      "src/global/js/wrap_start.js",
+      "src/global/js/dom.js",
+      "src/global/js/support.js",
+      "src/global/js/global.js"
+    ],
+    "dependencies": []
   },
-  "exclude": [
-    "node_modules"
-  ]
+
+  "core_outro": {
+    "js": [
+      "src/global/js/wrap_end.js"
+    ],
+    "less": [],
+    "dependencies": []
+  }
 }

@@ -1,21 +1,19 @@
-/**
- * Created by miracle on 2017/5/9.
- */
-$={};
-(function(){
+var $ = {};
+(function () {
+
     /**
      * @param arr
      * @returns {boolean}
      * */
-    $.isArray=function(arr){
-        return Object.prototype.toString.call(arr) === '[Object Array]';
+    $.isArray = function (arr) {
+            return Object.prototype.toString.call(arr) === '[Object Array]';
     };
 
     /**
      * @param obj
      * @returns {boolean}
      * */
-    $.isObject = function(obj){
+    $.isObject = function (obj) {
         return Object.prototype.toString.call(obj) === '[Object Object]';
     };
 
@@ -24,7 +22,7 @@ $={};
      * @param nodeList
      * @returns {Array}
      * */
-    $.toArray = function(nodeList){
+    $.toArray = function (nodeList) {
         var array = [];
         try{
             Array.prototype.slice(nodeList);
@@ -42,7 +40,7 @@ $={};
      * @param obj
      * @param callback
      * */
-    $.each = function(obj,callback){
+    $.each = function (obj, callback) {
         if(!obj){
             return;
         }
@@ -67,7 +65,7 @@ $={};
      * 去除数组重复项
      * @param arr
      * */
-    $.unique = function(arr){
+    $.unique = function (arr) {
         var array = [];
         for(var i=0; i<arr.length; i++){
             if(array.indexOf(arr[i]) === -1){
@@ -88,7 +86,7 @@ $={};
      * @param name
      * @param func
      * */
-    $.queue = function(name,func){
+    $.queue = function (name, func) {
         if(typeof _queueData[name] === 'undefined'){
             _queueData[name] = [];
         }
@@ -103,7 +101,7 @@ $={};
      * 将函数从队列中移除并执行
      * @param name
      * */
-    $.dequeue = function(name){
+    $.dequeue = function (name) {
         if(typeof _queueData[name] !== 'undefined' && _queueData.length){
             (_queueData[name].shift())();
         }
@@ -115,8 +113,8 @@ $={};
      * @param params
      * @returns {*}
      * */
-    $.extend = function(defaults, params){
-        $.each(defaults,function(key,value){
+    $.extend = function (defaults, params) {
+        $.each(defaults, function (key, value) {
             if(typeof params[key] === 'undefined'){
                 params[key] = value;
             }
@@ -136,7 +134,7 @@ $={};
      * $.data(dom, key, null);    删除指定键名的数据
      * $.data(dom, object);       批量写入数据
      */
-    $.data = function(dom, key, value){
+    $.data = function (dom, key, value) {
         if(!dom.inteuiDomStorage){
             dom.inteuiDomStorage = {};
         }
@@ -179,7 +177,7 @@ $={};
      * @param prop 可选
      * @returns {*}
      */
-    $.getStyle = function(dom, prop) {
+    $.getStyle = function (dom, prop) {
         var style = window.getComputedStyle(dom, null);
         if (arguments.length === 1) {
             return style;
@@ -194,7 +192,7 @@ $={};
      * @param dom
      * @returns {{top: number, left: number}}
      */
-    $.offset = function(dom){
+    $.offset = function (dom) {
         var box = dom.getBoundingClientRect();
         var body = document.body;
         var clientTop = dom.clientTop || body.clientTop || 0;
@@ -212,7 +210,7 @@ $={};
      * @param dom
      * @param transform
      */
-    $.transform = function(dom, transform){
+    $.transform = function (dom, transform) {
         dom.style.webkitTransform =
             dom.style.transform = transform;
     };
@@ -247,7 +245,7 @@ $={};
      * @param parent
      * @returns {Array}
      */
-    $.queryAll = function(selector, parent){
+    $.queryAll = function (selector, parent) {
         if(arguments.length === 1){
             parent = document;
         }
@@ -261,7 +259,7 @@ $={};
      * @param parent
      * @returns {Element}
      */
-    $.query = function(selector, parent){
+    $.query = function (selector, parent) {
         if (arguments.length === 1) {
             parent = document;
         }
@@ -288,7 +286,7 @@ $={};
      * @param selector
      * @returns {*}
      */
-    $.is = function(dom, selector){
+    $.is = function (dom, selector) {
         var compareWith;
         if(typeof selector === 'string'){
             if(dom === document){
@@ -331,7 +329,7 @@ $={};
      * @param selector
      * @returns {*}
      */
-    $.parent = function(dom, selector){
+    $.parent = function (dom, selector) {
         var parent = dom.parentNode;
         if(parent !== null){
             if(selector){
@@ -352,7 +350,7 @@ $={};
      * @param selector
      * @returns {Array}
      */
-    $.parents = function(dom, selector){
+    $.parents = function (dom, selector) {
         var parents = [];
         var parent = dom.parentNode;
         while(parent){
@@ -376,7 +374,7 @@ $={};
      * @param dom
      * @returns {boolean}
      */
-    $.contains = function (parent, dom){
+    $.contains = function (parent, dom) {
         var tmp = dom.parentNode;
         while(tmp){
             if($.is(parent, tmp)){
@@ -396,7 +394,7 @@ $={};
      * @param listener
      * @param capture
      */
-    $.on = function(dom, eventName, targetSelector, listener, capture){
+    $.on = function (dom, eventName, targetSelector, listener, capture) {
         //处理委托事件
         function handleLiveEvent(e){
             var target = e.target;
@@ -445,7 +443,7 @@ $={};
      * @param listener
      * @param capture
      */
-    $.off = function(dom, eventName, targetSelector, listener, capture){
+    $.off = function (dom, eventName, targetSelector, listener, capture) {
         var events = eventName.split(' ');
         for(var i=0; i<events.length; i++){
             if(typeof targetSelector === 'function'){
@@ -473,7 +471,7 @@ $={};
      * @param capture
      * @returns {*}
      */
-    $.one = function(dom, eventName, targetSelector, listener, capture){
+    $.one = function (dom, eventName, targetSelector, listener, capture) {
         if(typeof targetSelector === 'function'){
             listener = arguments[2];
             capture = arguments[3];
@@ -494,7 +492,7 @@ $={};
      * @param eventName
      * @param eventData
      */
-    $.trigger = function(dom, eventName, eventData){
+    $.trigger = function (dom, eventName, eventData) {
         var events = eventName.split(' ');
         for(var i = 0; i<events.length; i++){
             var evt;
@@ -516,7 +514,7 @@ $={};
      * @param dom
      * @param callback
      */
-    $.transitionEnd = function (dom, callback){
+    $.transitionEnd = function (dom, callback) {
         var events = [
             'webkitTransitionEnd',
             'transitionEnd'
@@ -573,7 +571,7 @@ $={};
      * @param selector 选择器或 html 字符串
      * @returns {Array}
      */
-    $.dom = function (selector){
+    $.dom = function (selector) {
         var tempParent;
 
         if(!selector){
@@ -641,7 +639,7 @@ $={};
      * @param selector
      * @returns {Array}
      */
-    $.children = function (dom, selector){
+    $.children = function (dom, selector) {
         var childrens = [];
         var childNodes = dom.childNodes;
 
@@ -664,7 +662,7 @@ $={};
      * @param selector
      * @returns {*}
      */
-    $.child = function(dom, selector){
+    $.child = function (dom, selector) {
         var children = dom.childNodes;
 
         if(!selector){
@@ -693,7 +691,7 @@ $={};
      * 移除 dom 元素中所有的子元素
      * @param dom
      */
-    $.empty = function(dom){
+    $.empty = function (dom) {
         if(!dom || dom.nodeType !== 1){
             return;
         }
@@ -763,7 +761,7 @@ $={};
      * @param trigger 在该元素上触发
      * @param obj 事件参数
      */
-    $.pluginEvent = function (eventName, pluginName, inst, trigger, obj){
+    $.pluginEvent = function (eventName, pluginName, inst, trigger, obj) {
         if (typeof obj === 'undefined'){
             obj = {};
         }
